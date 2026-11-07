@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grade 6 Math Center – Teacher Student Registration</title>
+  <style>
+    :root { --bg: #f0f2f5; --card: #fff; --text: #1c1e21; --muted: #65676b; --in: #fff; --bdr: #dddfe2; --blue: #1877f2; --tog: #e4e6eb; --row: #f7f8fa; }
+    body.dark { --bg: #18191a; --card: #242526; --text: #e4e6eb; --muted: #b0b3b8; --in: #3a3b3c; --bdr: #4e4f50; --blue: #2d88ff; --tog: #3a3b3c; --row: #2f3031; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Helvetica, Arial, sans-serif; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; transition: .3s; }
+    header { background: var(--card); border-bottom: 1px solid var(--bdr); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .brand img { width: 38px; height: 38px; object-fit: contain; border-radius: 8px; }
+    .brand span { color: var(--blue); font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+    .nav-actions { display: flex; gap: 10px; align-items: center; }
+    .tog, .back-btn { background: var(--tog); color: var(--text); border: 1px solid var(--bdr); border-radius: 20px; padding: 7px 14px; font-size: .9rem; font-weight: 600; cursor: pointer; text-decoration: none; }
+    .wrap { max-width: 980px; margin: 28px auto; padding: 0 20px; display: grid; grid-template-columns: 350px 1fr; gap: 24px; align-items: start; }
+    .right-col { display: flex; flex-direction: column; gap: 24px; }
+    .card { background: var(--card); border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.1); padding: 20px; }
+    h2 { font-size: 1.15rem; margin-bottom: 4px; }
+    .sub { font-size: .88rem; color: var(--muted); margin-bottom: 14px; }
+    label { display: block; font-size: .85rem; font-weight: 700; margin-bottom: 5px; }
+    input, select { width: 100%; padding: 11px 12px; margin-bottom: 12px; background: var(--in); border: 1px solid var(--bdr); border-radius: 6px; font-size: .95rem; color: var(--text); }
+    .pw-row { display: flex; gap: 8px; margin-bottom: 12px; }
+    .pw-row input { margin-bottom: 0; }
+    .gen-btn { background: var(--tog); color: var(--text); border: 1px solid var(--bdr); border-radius: 6px; padding: 0 12px; font-weight: 600; cursor: pointer; }
+    .btn-g { width: 100%; background: #42b72a; border: none; border-radius: 6px; color: #fff; font-size: 1.05rem; font-weight: 700; padding: 12px; cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--bdr); }
+    th { color: var(--muted); font-size: .8rem; text-transform: uppercase; }
+    tr:hover td { background: var(--row); }
+    .app-btn { background: #42b72a; color: #fff; border: none; border-radius: 4px; padding: 5px 10px; font-size: .82rem; font-weight: 700; cursor: pointer; margin-right: 4px; }
+    .del-btn { background: #e41e3f; color: #fff; border: none; border-radius: 4px; padding: 5px 9px; font-size: .82rem; cursor: pointer; }
+    .badge { background: rgba(24,119,242,.12); color: var(--blue); padding: 3px 8px; border-radius: 12px; font-weight: 700; font-size: .8rem; }
+    .empty { text-align: center; color: var(--muted); padding: 18px; }
+    @media (max-width: 820px) { .wrap { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/" class="brand">
+      <img src="/logo" alt="Logo">
+      <span>math center</span>
+    </a>
+    <div class="nav-actions">
+      <a href="/" class="back-btn">&larr; Student Login</a>
+      <button type="button" class="tog" id="tog">🌙 Dark Mode</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="card">
+      <h2>Register 6th Grade Student</h2>
+      <p class="sub">Manually add a student login ID and password.</p>
+      <form id="regForm">
+        <label for="sName">Student Full Name</label>
+        <input type="text" id="sName" placeholder="e.g., Omar Haddad" required>
+        <label for="sId">Student ID / Username</label>
+        <input type="text" id="sId" placeholder="e.g., g6-omar" required>
+        <label for="sSection">6th Grade Section</label>
+        <select id="sSection">
+          <option value="6A">Grade 6 - Section A</option>
+          <option value="6B">Grade 6 - Section B</option>
+          <option value="6C">Grade 6 - Section C</option>
+        </select>
+        <label for="sPass">Class Password</label>
+        <div class="pw-row">
+          <input type="text" id="sPass" placeholder="Enter or generate" required>
+          <button type="button" class="gen-btn" id="genBtn">Generate</button>
+        </div>
+        <button type="submit" class="btn-g">+ Register Student</button>
+      </form>
+    </div>
+
+    <div class="right-col">
+      <div class="card">
+        <h2>Pending Student Requests (<span id="reqCount">0</span>)</h2>
+        <p class="sub">Requests sent from "Request one" on the login page.</p>
+        <table>
+          <thead><tr><th>Student Name</th><th>Section</th><th>Action</th></tr></thead>
+          <tbody id="reqList"></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>Registered 6th Grade Students (<span id="count">0</span>)</h2>
+        <p class="sub">Active accounts ready to sign in on index.html.</p>
+        <table>
+          <thead><tr><th>Name</th><th>Student ID</th><th>Section</th><th>Password</th><th>Action</th></tr></thead>
+          <tbody id="roster"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tog = document.getElementById('tog');
+    if (localStorage.getItem('math6_theme') === 'dark') {
+      document.body.classList.add('dark');
+      tog.textContent = '☀️ Light Mode';
+    }
+    tog.onclick = () => {
+      const isDark = document.body.classList.toggle('dark');
+      localStorage.setItem('math6_theme', isDark ? 'dark' : 'light');
+      tog.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+    };
+
+    function makePass() {
+      const words = ['Math', 'Pi', 'Cube', 'Prime', 'Angle', 'Ratio'];
+      return `${words[Math.floor(Math.random() * words.length)]}-${Math.floor(100 + Math.random() * 900)}`;
+    }
+    document.getElementById('genBtn').onclick = () => { document.getElementById('sPass').value = makePass(); };
+
+    let students = JSON.parse(localStorage.getItem('math6_students') || '[]');
+    let requests = JSON.parse(localStorage.getItem('math6_requests') || '[]');
+
+    function saveAndRender() {
+      localStorage.setItem('math6_students', JSON.stringify(students));
+      localStorage.setItem('math6_requests', JSON.stringify(requests));
+
+      document.getElementById('reqCount').textContent = requests.length;
+      document.getElementById('reqList').innerHTML = requests.length ? requests.map((r, i) => `
+        <tr>
+          <td><strong>${r.name}</strong></td>
+          <td><span class="badge">${r.section}</span></td>
+          <td>
+            <button class="app-btn" onclick="approveReq(${i})">Approve</button>
+            <button class="del-btn" onclick="denyReq(${i})">Dismiss</button>
+          </td>
+        </tr>
+      `).join('') : '<tr><td colspan="3" class="empty">No pending requests.</td></tr>';
+
+      document.getElementById('count').textContent = students.length;
+      document.getElementById('roster').innerHTML = students.length ? students.map((s, i) => `
+        <tr>
+          <td><strong>${s.name}</strong></td>
+          <td>${s.id}</td>
+          <td><span class="badge">${s.section}</span></td>
+          <td><code>${s.pass}</code></td>
+          <td><button class="del-btn" onclick="removeStudent(${i})">Remove</button></td>
+        </tr>
+      `).join('') : '<tr><td colspan="5" class="empty">No students registered yet.</td></tr>';
+    }
+
+    window.approveReq = (i) => {
+      const r = requests[i];
+      const first = r.name.split(' ')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+      const id = `g6-${first}${Math.floor(10 + Math.random() * 90)}`;
+      students.push({ name: r.name, id, section: r.section, pass: makePass() });
+      requests.splice(i, 1);
+      saveAndRender();
+    };
+
+    window.denyReq = (i) => { requests.splice(i, 1); saveAndRender(); };
+    window.removeStudent = (i) => { students.splice(i, 1); saveAndRender(); };
+
+    document.getElementById('regForm').onsubmit = (e) => {
+      e.preventDefault();
+      students.push({
+        name: document.getElementById('sName').value.trim(),
+        id: document.getElementById('sId').value.trim(),
+        section: document.getElementById('sSection').value,
+        pass: document.getElementById('sPass').value.trim()
+      });
+      e.target.reset();
+      saveAndRender();
+    };
+
+    window.addEventListener('storage', () => {
+      students = JSON.parse(localStorage.getItem('math6_students') || '[]');
+      requests = JSON.parse(localStorage.getItem('math6_requests') || '[]');
+      saveAndRender();
+    });
+
+    saveAndRender();
+  </script>
+</body>
+</html>

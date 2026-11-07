@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Math Game Maker</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f0f2f5;color:#1c1e21;margin:0;padding:20px}
+body.dark{background:#18191a;color:#e4e6eb}
+body.girl{background:#fdf2f8}
+.wrap{max-width:850px;margin:auto;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+body.dark .card{background:#242526}
+input,select,button{width:100%;padding:10px;margin:6px 0;border-radius:6px;border:1px solid #ccc;font-size:1rem}
+button{background:#1877f2;color:#fff;border:none;font-weight:700;cursor:pointer}
+body.girl button{background:#ec4899}
+.arena{padding:20px;border-radius:10px;text-align:center;min-height:220px;background:#e4e6eb;color:#111}
+.arena.space{background:#0f172a;color:#fff}
+.arena.race{background:#065f46;color:#fff}
+.cbtn{background:#fff;color:#111;margin:5px 0}
+@media(max-width:700px){.wrap{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<p><a href="home.html">&larr; Back to Home</a></p><br>
+<div class="wrap">
+  <div class="card">
+    <h3>1. Template</h3>
+    <select id="tpl"><option value="quiz">Classic Quiz</option><option value="space">Space Blaster</option><option value="race">Math Racer</option></select>
+    <h3>2. Question &amp; Choices</h3>
+    <input id="q" placeholder="Question (e.g. 5 x 6 = ?)">
+    <input id="o1" placeholder="Choice 1"><input id="o2" placeholder="Choice 2">
+    <input id="o3" placeholder="Choice 3"><input id="o4" placeholder="Choice 4">
+    <label>Right Answer: <b id="sv">Choice #1</b></label>
+    <input type="range" id="sl" min="1" max="4" value="1">
+    <button id="add">+ Add Question (<span id="cnt">0</span>)</button>
+    <button id="play" style="background:#42b72a">Play Game</button>
+    <input id="gt" placeholder="Game Title"><button id="pub">Publish to Home</button>
+  </div>
+  <div class="card">
+    <div class="arena" id="ar"><h3 id="gq">Ready to Play</h3><div id="gc"></div></div>
+  </div>
+</div>
+<script>
+if(localStorage.getItem('math6_theme')==='dark')document.body.classList.add('dark');
+if(localStorage.getItem('math6_gender')==='girl')document.body.classList.add('girl');
+let qs=JSON.parse(localStorage.getItem('math6_games')||'[]'),i=0,sc=0;
+const cnt=document.getElementById('cnt'),sl=document.getElementById('sl');cnt.textContent=qs.length;
+sl.oninput=()=>document.getElementById('sv').textContent='Choice #'+sl.value;
+document.getElementById('add').onclick=()=>{
+  const q=document.getElementById('q').value.trim(),c1=document.getElementById('o1').value.trim(),c2=document.getElementById('o2').value.trim(),c3=document.getElementById('o3').value.trim(),c4=document.getElementById('o4').value.trim();
+  if(!q||!c1||!c2||!c3||!c4)return alert('Fill all fields');
+  qs.push({q,c1,c2,c3,c4,ans:+sl.value,t:document.getElementById('tpl').value});
+  localStorage.setItem('math6_games',JSON.stringify(qs));cnt.textContent=qs.length;
+  document.getElementById('q').value=document.getElementById('o1').value=document.getElementById('o2').value=document.getElementById('o3').value=document.getElementById('o4').value='';
+};
+function show(){
+  const gc=document.getElementById('gc'),gq=document.getElementById('gq'),ar=document.getElementById('ar');
+  if(i>=qs.length){gq.textContent='Score: '+sc+'/'+qs.length;gc.innerHTML='';return;}
+  const c=qs.at(i);ar.className='arena '+c.t;gq.textContent=c.q;
+  gc.innerHTML='<button class="cbtn" onclick="chk(1)">'+c.c1+'</button><button class="cbtn" onclick="chk(2)">'+c.c2+'</button><button class="cbtn" onclick="chk(3)">'+c.c3+'</button><button class="cbtn" onclick="chk(4)">'+c.c4+'</button>';
+}
+window.chk=(n)=>{if(n===qs.at(i).ans)sc++;i++;show();};
+document.getElementById('play').onclick=()=>{if(!qs.length)return alert('Add a question first');i=0;sc=0;show();};
+document.getElementById('pub').onclick=()=>{
+  if(!qs.length)return alert('Add a question first');
+  const title=document.getElementById('gt').value.trim()||'Math Game',feed=JSON.parse(localStorage.getItem('math6_published')||'[]');
+  feed.unshift({id:Date.now(),title,author:'Class',tpl:document.getElementById('tpl').value,qs:qs.slice()});
+  localStorage.setItem('math6_published',JSON.stringify(feed));alert('Published to Home!');
+};
+</script>
+</body>
+</html>
